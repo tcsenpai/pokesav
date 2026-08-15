@@ -45,8 +45,16 @@ When user asks "where am I in Pokémon X" or "what should I do next":
 4. If generation not supported, tell user and offer to help add it
 
 ### ROM Hack Story Guides
-- **Scorched Silver**: Johto, 8 gyms (Falkner→Clair), Team Phoenix villain, Celebi storyline. Starts Cherrygrove City.
+- **Scorched Silver**: Johto, 8 gyms (Falkner→Clair), Team Phoenix villain, Celebi storyline. Starts Cherrygrove City. Event flags at SaveBlock1+0x0000 (pokeemerald layout).
 - **Lazarus**: Ilios region (Greek), 5 chapters, Regulator Syndicate. NOT pokeemerald-based.
 - **Emerald Rogue**: Roguelike — no traditional story. Track run depth + hub upgrades.
 - **Pisces**: Hoenn sequel, pokeemerald-expansion → standard flags work.
 - **Fire Red Multiverse**: FireRed-based, multiverse concept, different flag system.
+
+### Gen 3 Event Flags (pokeemerald-expansion)
+- Flags stored at SaveBlock1 + 0x0000 (bitfield)
+- SYSTEM_FLAGS base: 0x860
+- Gym defeat flags: 0x4F0-0x4F7
+- Elite Four: 0x4FB-0x4FE
+- Game clear: 0x864
+- Starter received: 0x860
