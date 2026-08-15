@@ -18,8 +18,9 @@ python3 -m pokesav.cli ~/white.sav --gen 5
 ```
 
 ## Supported Generations
-- **Gen 5** (Black/White) — full support
-- Gen 4, 3 — planned (see TRACKER.md)
+- **Gen 5** (Black/White) — full support (parser, event flags, story guide)
+- **Gen 3** (Ruby/Sapphire/Emerald + ROM hacks) — partial (party decrypt works, trainer/story WIP)
+- Gen 4 — planned
 
 ## What it extracts
 - Trainer name, TID/SID, gender, language, playtime, money
