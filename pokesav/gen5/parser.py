@@ -10,6 +10,7 @@ from pathlib import Path
 from .encryption import decrypt_pokemon_data
 from .offsets import BLOCKS, TRAINER, POSITION, MISC, PARTY, GAME_VERSIONS, LANGUAGES
 from .story import BADGE_NAMES, get_story_guidance
+from .event_flags import parse_event_flags, format_event_report, get_detailed_status
 from ..data.species import SPECIES
 from ..data.natures import NATURES
 
@@ -38,9 +39,37 @@ def parse(filepath: str) -> dict:
         "party": _parse_party(data),
     }
 
-    # Story guidance
+    # Event flags analysis
     badge_count = result["badges"]["count"]
+    event_result = parse_event_flags(data)
+    detailed = get_detailed_status(data, badge_count)
+
+    # Story guidance (uses event flags for precision)
     story = get_story_guidance(badge_count)
+
+    # Override story guidance if event flags tell us more
+    if detailed["elite4_done"]:
+        story = {
+            "location": "Post-game — Pokémon League cleared",
+            "next": "Explore post-game areas: Undella Town, Giant Chasm, P2 Laboratory. Catch legendaries.",
+            "tip": "The real game begins now. Battle Cynthia in Undella Town.",
+            "level_range": "60-80",
+        }
+    elif detailed["dragonspiral_done"] and badge_count == 6:
+        story = {
+            "location": "Mistralton City → Opelucid City",
+            "next": "Go to Route 7 → Icirrus City for the 7th badge (Brycen, Ice). Then Opelucid City for the 8th.",
+            "tip": "Dragonspiral Tower is done. Focus on badges now. Brycen = Ice, Drayden/Iris = Dragon.",
+            "level_range": "37-48",
+        }
+    elif detailed["dragonspiral_done"]:
+        story = {
+            "location": "Post-Dragonspiral Tower",
+            "next": "Head to Opelucid City for the 8th and final badge (Drayden/Iris, Dragon type).",
+            "tip": "Ice moves are essential for the Dragon gym. Lv42+ recommended.",
+            "level_range": "42-48",
+        }
+
     result["story"] = {
         "badges": badge_count,
         "progress_pct": round(badge_count / 8 * 100),
@@ -48,6 +77,20 @@ def parse(filepath: str) -> dict:
         "what_next": story["next"],
         "tip": story["tip"],
         "recommended_level": story["level_range"],
+        "dragonspiral_done": detailed["dragonspiral_done"],
+        "elite4_done": detailed["elite4_done"],
+    }
+    result["event_flags"] = {
+        "total_set": event_result["total_flags_set"],
+        "current_phase": event_result["current_phase"],
+        "phase_completion": {
+            phase: f"{done}/{total}"
+            for phase, (done, total) in event_result["phase_completion"].items()
+        },
+        "key_events": {
+            phase: events
+            for phase, events in event_result["story_progress"].items()
+        },
     }
 
     return result
@@ -166,5 +209,19 @@ def format_text(result: dict) -> str:
     lines.append(f"**Next:** {s['what_next']}")
     lines.append(f"**Tip:** {s['tip']}")
     lines.append(f"**Recommended level:** {s['recommended_level']}")
+    if s.get("dragonspiral_done"):
+        lines.append(f"**Dragonspiral Tower:** ✓ Done")
+    if s.get("elite4_done"):
+        lines.append(f"**Elite Four:** ✓ Cleared")
+
+    # Event flags summary
+    ef = result.get("event_flags", {})
+    if ef:
+        lines.append("")
+        lines.append(f"### Event Flags ({ef['total_set']} flags set)")
+        lines.append(f"**Story phase:** {ef['current_phase']}")
+        for phase, progress in ef.get("phase_completion", {}).items():
+            marker = " ◀" if phase == ef["current_phase"] else ""
+            lines.append(f"  {phase}: {progress}{marker}")
 
     return "\n".join(lines)
