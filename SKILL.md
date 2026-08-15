@@ -39,6 +39,14 @@ See TRACKER.md in the repo for the full checklist.
 
 ## For the agent
 When user asks "where am I in Pokémon X" or "what should I do next":
-1. Run `python3 -m pokesav.cli <savefile>` 
-2. Report the output directly
-3. If generation not supported, tell user and offer to help add it
+1. Run `python3 -m pokesav.cli <savefile>` for Gen 5
+2. For Gen 3 ROM hacks, run the parser and cross-reference with story guides
+3. Report the output directly
+4. If generation not supported, tell user and offer to help add it
+
+### ROM Hack Story Guides
+- **Scorched Silver**: Johto, 8 gyms (Falkner→Clair), Team Phoenix villain, Celebi storyline. Starts Cherrygrove City.
+- **Lazarus**: Ilios region (Greek), 5 chapters, Regulator Syndicate. NOT pokeemerald-based.
+- **Emerald Rogue**: Roguelike — no traditional story. Track run depth + hub upgrades.
+- **Pisces**: Hoenn sequel, pokeemerald-expansion → standard flags work.
+- **Fire Red Multiverse**: FireRed-based, multiverse concept, different flag system.
