@@ -76,10 +76,22 @@ def parse_pokemon(large_data, pkm_offset):
         'SpD': (ivs_word >> 25) & 0x1F,
     }
     
+    # Read party-specific fields (unencrypted, after the encrypted block)
+    level = large_data[pkm_offset + 84]
+    hp = struct.unpack_from('<H', large_data, pkm_offset + 86)[0]
+    max_hp = struct.unpack_from('<H', large_data, pkm_offset + 88)[0]
+    atk = struct.unpack_from('<H', large_data, pkm_offset + 90)[0]
+    dfn = struct.unpack_from('<H', large_data, pkm_offset + 92)[0]
+    spd = struct.unpack_from('<H', large_data, pkm_offset + 94)[0]
+    spa = struct.unpack_from('<H', large_data, pkm_offset + 96)[0]
+    spd2 = struct.unpack_from('<H', large_data, pkm_offset + 98)[0]
+
     return {
         'personality': pv, 'ot_id': ot, 'nickname': nickname,
         'species': species, 'item': item, 'exp': exp, 'friendship': friendship,
         'moves': moves, 'pp': pp, 'ivs': ivs,
+        'level': level,
+        'stats': {'hp': hp, 'max_hp': max_hp, 'atk': atk, 'def': dfn, 'spe': spd, 'spa': spa, 'spd': spd2},
     }
 
 def parse_save(filepath):
