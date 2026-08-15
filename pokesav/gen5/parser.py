@@ -63,7 +63,8 @@ def _parse_trainer(data: bytes) -> dict:
     base = BLOCKS["trainer_data"]
     try:
         name = data[base + TRAINER["name"] : base + TRAINER["name"] + 16]
-        name = name.decode("utf-16-le").rstrip("\x00").rstrip("\ufffd")
+        name = name.decode("utf-16-le").rstrip("\x00").rstrip("\ufffd").rstrip("\uffff")
+        name = name.replace("\x00", "").replace("\ufffd", "").replace("\uffff", "").strip()
     except (UnicodeDecodeError, ValueError):
         name = "???"
 

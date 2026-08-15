@@ -120,13 +120,19 @@ def decrypt_pokemon_data(raw: bytes) -> dict | None:
 
     # Parse Block E (Misc) — offset 64
     try:
-        nickname = reordered[64:86].decode("utf-16-le").rstrip("\x00").rstrip("\ufffd")
+        raw_nick = reordered[64:86].decode("utf-16-le")
+        # Strip all control/terminator characters
+        nickname = raw_nick.rstrip("\x00").rstrip("\ufffd").rstrip("\uffff")
+        # Remove any remaining null chars in the middle
+        nickname = nickname.replace("\x00", "").replace("\ufffd", "").replace("\uffff", "").strip()
     except (UnicodeDecodeError, ValueError):
         nickname = ""
 
     # Parse Block D (OT) — offset 96
     try:
-        ot_name = reordered[96:112].decode("utf-16-le").rstrip("\x00").rstrip("\ufffd")
+        raw_ot = reordered[96:112].decode("utf-16-le")
+        ot_name = raw_ot.rstrip("\x00").rstrip("\ufffd").rstrip("\uffff")
+        ot_name = ot_name.replace("\x00", "").replace("\ufffd", "").replace("\uffff", "").strip()
     except (UnicodeDecodeError, ValueError):
         ot_name = ""
 
