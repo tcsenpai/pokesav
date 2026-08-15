@@ -17,7 +17,7 @@ import struct
 
 # Block 45: EventWork
 EVENT_WORK_BASE = 0x20100
-EVENT_FLAGS_START = 0x20378
+EVENT_FLAGS_START = 0x2037C
 EVENT_FLAGS_BYTES = 364  # 2912 bits / 8
 
 # ─── Gym Leader Trainer Battle Flags ───
