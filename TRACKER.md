@@ -6,6 +6,8 @@
 - 🔜 Planned — research started, no implementation yet
 - 📋 Tracked — known, no work started
 
+---
+
 ## Gen 5 (Black / White / Black 2 / White 2) — ✅ Full (BW1 only)
 
 ### Verified fields
@@ -21,69 +23,52 @@
 - [x] Party Pokémon (0x18E08, 6×220 PK5 structs)
 - [x] PK5 decryption (LCRNG cipher, block shuffle)
 - [x] Story progression guide (badge → next step, no spoilers)
+- [x] Event flags (0x2037C, story milestones)
 
 ### Known issues
-- [ ] Nickname trailing bytes (UTF-16LE terminator `\uffff`)
-- [ ] Nature offset may be wrong for traded Pokémon (always shows Hardy)
+- [ ] Nickname trailing bytes (UTF-16LE terminator)
+- [ ] Nature offset may need adjustment
 - [ ] Map ID → location name not implemented
 - [ ] PC box parsing not implemented
 - [ ] B2W2 offsets differ (not yet implemented)
 
-### Source
-- [PKHeX source](https://github.com/kwsch/PKHeX): SaveBlockAccessor5BW.cs, PokeCrypto.cs
-- [ProjectPokemon BW Save Structure](https://projectpokemon.org/home/docs/gen-5/bw-save-structure-r73/)
-- [ProjectPokemon PK5 Structure](https://projectpokemon.org/home/docs/gen-5/bw-save-structure-r60/)
+---
+
+## Gen 3 (Ruby / Sapphire / Emerald / FRLG + ROM hacks) — 🔧 Partial
+
+### Verified fields
+- [x] Save slot detection (counter-based)
+- [x] Section layout (0=SaveBlock2, 1-4=SaveBlock1, 5-13=PC Storage)
+- [x] Footer parsing (offset 4084, signature 0x08012025)
+- [x] Trainer name (GBA charset: 0xBB='A', 0xD5='a')
+- [x] Party count and data
+- [x] PKM decryption (XOR with PID^OT_ID)
+- [x] Species, level, HP, stats, moves, IVs
+- [x] ROM hack support (pokeemerald-expansion footer at 0xFF4)
+
+### Known issues
+- [ ] Trainer TID/SID offset varies by ROM hack
+- [ ] Money/badges not extracted
+- [ ] Custom species (ROM hacks) need per-hack species tables
+- [ ] Nickname charset may differ per hack
+- [ ] Fire Red party offset (0x038) vs Emerald (0x238)
 
 ---
 
-## Gen 4 (Diamond / Pearl / Platinum / HGSS) — 🔜 Planned
+## Gen 4 (Diamond / Pearl / Platinum / HGSS) — 📋 Tracked
 
 ### Research notes
 - 512KB saves, two 256KB blocks
-- PK4 structure similar to PK5 but different block layout
-- Trainer data at different offsets
-- Need to find: SAV4 block map from PKHeX source
-
----
-
-## Gen 3 (Ruby / Sapphire / Emerald / FRLG) — 🔜 Planned
-
-### Research notes
-- 128KB saves, two 64KB halves
-- 80-byte Pokémon structure (PK3)
-- Encryption: XOR with PID^OT_ID, no block shuffle
-- Section-based layout with 4KB sections
-
----
-
-## Gen 6 (X / Y / ORAS) — 📋 Tracked
-
-### Research notes
-- 3DS save format, different from NDS
-- 512KB or larger
-- PK6 structure (232 bytes)
-- Need decryption algorithm
-
----
-
-## Gen 7 (Sun / Moon / USUM) — 📋 Tracked
-
-### Research notes
-- 3DS save format
-- Similar to Gen 6 but different offsets
-- PK7 structure
+- PK4 structure similar to PK5 (136 bytes stored, 236 party)
+- Encryption: LCRNG with checksum key, block shuffle (PID >> 13) & 31
+- Trainer data at different offsets than Gen 5
 
 ---
 
 ## How to add a new generation
-
-1. **Research**: Find the save structure from PKHeX source or community docs
-2. **Offsets**: Create `pokesav/genN/offsets.py` with verified block map
-3. **Encryption**: Implement decrypt/unshuffle in `pokesav/genN/encryption.py`
-4. **Parser**: Write `pokesav/genN/parser.py` with parse() and format_text()
-5. **Data**: Add generation-specific data (species, moves, etc.) to `pokesav/data/`
-6. **Detection**: Update `detect.py` with generation detection logic
-7. **Register**: Add to `GENERATIONS` dict in `__init__.py`
-8. **Story**: Add progression guide to `pokesav/genN/story.py`
-9. **Test**: Verify against a real save file
-10. **Update**: Check off items in this tracker
+1. Research offsets from PKHeX source or community docs
+2. Create `pokesav/genN/` with parser, offsets, encryption modules
+3. Add to `GENERATIONS` dict in `__init__.py`
+4. Update `detect.py` with detection logic
+5. Add story guidance
+6. Test against real save file
