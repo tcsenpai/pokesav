@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.backends._legacy:_Backend"
+
+[project]
+name = "pokesav"
+version = "0.1.0"
+description = "Parse Pokémon save files and get story guidance"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.11"
+keywords = ["pokemon", "save", "parser", "nds", "gba"]
+
+[project.scripts]
+pokesav = "pokesav.cli:main"
